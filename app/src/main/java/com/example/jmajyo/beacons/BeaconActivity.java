@@ -1,10 +1,13 @@
 package com.example.jmajyo.beacons;
 
+import android.app.Notification;
 import android.os.RemoteException;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
+
+import com.example.jmajyo.beacons.utils.Notifications;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -22,8 +25,6 @@ public class BeaconActivity extends AppCompatActivity implements BeaconConsumer 
     public static final String TAG = "BeaconsEverywhere";
     private BeaconManager beaconManager;
     private TextView text;
-    private Beacon beacon;
-    private boolean beaconbool=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +39,6 @@ public class BeaconActivity extends AppCompatActivity implements BeaconConsumer 
                  .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"));
 
         beaconManager.bind(this);
-
-       // if(beaconbool ==true)
-           // text.setText("Distancia: " + beacon.getDistance());
 
     }
 
@@ -91,6 +89,7 @@ public class BeaconActivity extends AppCompatActivity implements BeaconConsumer 
                         public void run() {
                             if(!oneBeacon.getId3().equals("34782")) {
                                 text.setText(String.format("Distancia: %.02g", oneBeacon.getDistance()));
+                                Notifications.postNotification(getBaseContext(), BeaconActivity.class, "Nuevo beacon", "Detectado un nuevo beacon", R.drawable.btn_check_buttonless_on ,0xFF00FF00, 889988);
                             }
                         }
                     });
