@@ -100,23 +100,28 @@ public class BeaconActivity extends AppCompatActivity implements BeaconConsumer 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
+                            boolean isInRealm= false;
+                            Date date = null;
                             Realm realm = Realm.getDefaultInstance();
                             RealmResults<Bacon> listOfBaconInRealm = realm.where(Bacon.class).findAllSorted("minor");
                             if(listOfBaconInRealm.size()>0) {//Si la base de datos tiene algo
                                 for (Bacon b : listOfBaconInRealm) {//busco todos los bacon de la base de datos
                                     //dentro de este for solo hay que compararlos y poner una variable a true o 1 si son iguales, luego ya se harán
                                     //el resto de comprobaciones.
-                                    Log.d(TAG,"captado" + bacon.getMinor());
-                                    Log.d(TAG,"realm" + b.getMinor());
-                                    if (bacon.getMinor() == b.getMinor()) {//Si el bacon ya esta en la base de datos
+                                    if(bacon.getMinor() == b.getMinor()){
+                                        isInRealm=true;
+                                        date=b.getDate();
+                                    }
+                                }
+                                    if (isInRealm) {//Si el bacon ya esta en la base de datos
                                         //comprobar fecha, no se como...
                                         Log.d(TAG, "Si minor = minor base de datos ");
-                                        long time = b.getDate().getTime();
+                                        long time = date.getTime();
 
                                         long millisecondsPassed = new Date().getTime() - time;
                                         if (millisecondsPassed > MILLISECONDS_IN_A_DAY) {//Sí ha pasado más de un día desde la última notificación
                                             // si la fecha es más vieja de un día mando notificación y guardo la nueva notificación en la BD(la fecha se ha cambiado)
-                                            Notifications.postNotification(getBaseContext(), BeaconActivity.class, "Nuevo beacon", "Si ha pasado mas de un día" + b.getMinor(), R.drawable.btn_check_buttonless_on, 0xFF00FF00, 889988);
+                                            Notifications.postNotification(getBaseContext(), BeaconActivity.class, "Nuevo beacon", "Si ha pasado mas de un día" + bacon.getMinor(), R.drawable.btn_check_buttonless_on, 0xFF00FF00, 889988);
                                             realm.beginTransaction();
                                             realm.copyToRealmOrUpdate(bacon);
                                             realm.commitTransaction();
@@ -127,13 +132,13 @@ public class BeaconActivity extends AppCompatActivity implements BeaconConsumer 
                                         }
                                     } else {//Sí el bacon que he visto no esta en la base de datos problema!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                         //mando notificación y añado a realm ese bacon.
-                                        Notifications.postNotification(getBaseContext(), BeaconActivity.class, "Nuevo beacon", "Si hay algo en la base de datos, pero el bacon no" + b.getMinor(), R.drawable.btn_check_buttonless_on, 0xFF00FF00, 889988);
+                                        Notifications.postNotification(getBaseContext(), BeaconActivity.class, "Nuevo beacon", "Si hay algo en la base de datos, pero el bacon no" + bacon.getMinor() , R.drawable.btn_check_buttonless_on, 0xFF00FF00, 889988);
                                         realm.beginTransaction();
                                         realm.copyToRealm(bacon);
                                         realm.commitTransaction();
                                         Log.d(TAG, "Sí no esta en la base de datos el minor");
                                     }
-                                }
+
                             }else{//sí la base de datos no tiene nada
                                 Notifications.postNotification(getBaseContext(), BeaconActivity.class, "Nuevo beacon", "No esta en la base de datos" + bacon.getMinor(), R.drawable.btn_check_buttonless_on, 0xFF00FF00, 889988);
                                 realm.beginTransaction();
