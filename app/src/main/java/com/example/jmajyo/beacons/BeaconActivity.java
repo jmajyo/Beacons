@@ -53,6 +53,15 @@ public class BeaconActivity extends AppCompatActivity implements BeaconConsumer 
     protected void onDestroy() {
         super.onDestroy();
         beaconManager.unbind(this);
+        /*Realm realm = Realm.getDefaultInstance();
+        RealmResults<Bacon> listOfBaconInRealm = realm.where(Bacon.class).findAll();
+        Log.d(TAG, "Todos los beacon de la memoria");
+        for (Bacon b :listOfBaconInRealm) {
+            Log.d(TAG, "minor: "+ b.getMinor() + " - major: " + b.getMajor());
+        }
+        realm.beginTransaction();
+        realm.delete(Bacon.class);
+        realm.commitTransaction();*/
     }
 
     @Override
@@ -97,9 +106,9 @@ public class BeaconActivity extends AppCompatActivity implements BeaconConsumer 
                     bacon.setMajor(oneBeacon.getId2().toInt());
                     bacon.setMinor(oneBeacon.getId3().toInt());
 
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
+                    //runOnUiThread(new Runnable() {
+                        //@Override
+                        //public void run() {
                             boolean isInRealm= false;
                             Date date = null;
                             Realm realm = Realm.getDefaultInstance();
@@ -146,8 +155,8 @@ public class BeaconActivity extends AppCompatActivity implements BeaconConsumer 
                                 realm.commitTransaction();
                                 Log.d(TAG, "Sí no hay nada en la base de datos.");
                             }
-                        }
-                    });
+                        //}
+                    //});
                 }
             }
         });
